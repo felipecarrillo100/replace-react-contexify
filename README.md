@@ -410,6 +410,10 @@ npm test
 npm run build
 ```
 
+## Acknowledgments
+
+This project was inspired by and built upon the foundation of [react-contexify](https://github.com/fkhadra/react-contexify) by **Fadi Khadra**. Thank you for creating such a great library that served the React community for years! 🙏
+
 ## License
 
 MIT
