@@ -342,18 +342,148 @@ Built-in animations: `fade`, `flip`, `pop`, `zoom`
 | `JsonContextMenu` | Menu rendered from JSON configuration |
 | `IconFont` | Helper for displaying icons |
 
-## API
+## API Reference
+
+### Menu
+
+The main container component for context menu items.
+
+```tsx
+<Menu
+  id="my-menu"              // Required: unique identifier
+  theme="dark"              // Optional: 'light' | 'dark' | custom string
+  animation="pop"           // Optional: 'fade' | 'flip' | 'pop' | 'zoom'
+  className="custom-class"  // Optional: additional CSS classes
+  style={{ minWidth: 200 }} // Optional: inline styles
+>
+  {children}
+</Menu>
+```
+
+| Prop | Type | Required | Description |
+|------|------|----------|-------------|
+| `id` | `string \| number` | ✅ | Unique identifier to trigger this menu |
+| `theme` | `string` | | Built-in: `'light'`, `'dark'` or custom |
+| `animation` | `string` | | Built-in: `'fade'`, `'flip'`, `'pop'`, `'zoom'` |
+| `className` | `string` | | Additional CSS classes |
+| `style` | `CSSProperties` | | Inline styles |
+
+---
+
+### Item
+
+Individual clickable menu item.
+
+```tsx
+<Item
+  onClick={handler}         // Click handler
+  disabled={false}          // Static disabled state
+  disabled={(args) => bool} // Dynamic disabled state
+  data={{ key: 'value' }}   // Custom data passed to onClick
+  className="custom"        // Additional CSS classes
+  style={{}}                // Inline styles
+>
+  📋 Copy
+</Item>
+```
+
+| Prop | Type | Required | Description |
+|------|------|----------|-------------|
+| `onClick` | `(args: MenuItemEventHandler) => void` | | Click handler |
+| `disabled` | `boolean \| ((args: MenuItemEventHandler) => boolean)` | | Disable the item |
+| `data` | `Record<string, unknown>` | | Custom data passed to handlers via `props` |
+| `children` | `ReactNode` | ✅ | Item content |
+| `className` | `string` | | Additional CSS classes |
+| `style` | `CSSProperties` | | Inline styles |
+
+**MenuItemEventHandler:**
+```typescript
+interface MenuItemEventHandler {
+  event: TriggerEvent;                // The original trigger event
+  props?: Record<string, unknown>;    // Combined data from trigger + item
+}
+```
+
+---
+
+### Submenu
+
+Nested menu with child items. Supports infinite nesting.
+
+```tsx
+<Submenu
+  label="📁 More Options"   // Required: submenu label
+  arrow="▶"                 // Optional: custom arrow character
+  disabled={false}          // Optional: disable submenu
+>
+  <Item onClick={handler}>Sub Item 1</Item>
+  <Item onClick={handler}>Sub Item 2</Item>
+</Submenu>
+```
+
+| Prop | Type | Required | Description |
+|------|------|----------|-------------|
+| `label` | `ReactNode` | ✅ | Submenu label content |
+| `arrow` | `ReactNode` | | Custom arrow (default: `▶`, RTL: `◀`) |
+| `disabled` | `boolean \| ((args) => boolean)` | | Disable the submenu |
+| `children` | `ReactNode` | ✅ | Submenu items |
+| `className` | `string` | | Additional CSS classes |
+| `style` | `CSSProperties` | | Inline styles |
+
+---
+
+### Separator
+
+Visual divider between menu items.
+
+```tsx
+<Separator />
+```
+
+---
+
+### MenuProvider
+
+Wrapper that binds context menu events to children. Right-click triggers the menu.
+
+```tsx
+<MenuProvider
+  id="my-menu"              // Required: menu id to trigger
+  data={{ context: 'data' }} // Optional: data passed to menu items
+  className="trigger-area"  // Optional: CSS classes
+>
+  <div>Right-click me!</div>
+</MenuProvider>
+```
+
+| Prop | Type | Required | Description |
+|------|------|----------|-------------|
+| `id` | `string \| number` | ✅ | Menu ID to trigger |
+| `data` | `Record<string, unknown>` | | Data passed to item handlers via `props` |
+| `children` | `ReactNode` | ✅ | Trigger element(s) |
+| `className` | `string` | | Additional CSS classes |
+| `style` | `CSSProperties` | | Inline styles |
+
+---
 
 ### contextMenu
+
+Programmatic API for showing/hiding menus.
 
 ```typescript
 import { contextMenu } from 'replace-react-contexify';
 
-// Show a menu
+// Show menu at event position
 contextMenu.show({
-  id: 'menu-id',
-  event: mouseEvent,  // or use x/y coordinates
-  x: 100,
+  id: 'my-menu',
+  event: mouseEvent,
+  props: { custom: 'data' }
+});
+
+// Show menu at specific coordinates
+contextMenu.show({
+  id: 'my-menu',
+  x: 300,
   y: 200,
   props: { custom: 'data' }
 });
@@ -362,21 +492,212 @@ contextMenu.show({
 contextMenu.hideAll();
 ```
 
+| Method | Parameters | Description |
+|--------|------------|-------------|
+| `show(options)` | `ShowContextMenuParams` | Display a menu |
+| `hideAll()` | none | Hide all visible menus |
+
+**ShowContextMenuParams:**
+```typescript
+interface ShowContextMenuParams {
+  id: MenuId;                          // Menu ID to show
+  event?: MouseEvent | TouchEvent;     // Position from event
+  x?: number;                          // X coordinate (if no event)
+  y?: number;                          // Y coordinate (if no event)
+  props?: Record<string, unknown>;     // Data passed to items
+}
+```
+
+---
+
+### JsonContextMenu
+
+Dynamic menu rendered from JSON configuration. Perfect for API-driven menus.
+
+```tsx
+const menuRef = useRef<JsonContextMenuRef>(null);
+
+<JsonContextMenu
+  ref={menuRef}                        // Required: ref for imperative control
+  id="json-menu"                       // Required: unique identifier
+  theme="dark"                         // Optional: theme
+  animation="pop"                      // Optional: animation
+  formatMessageProvider={formatMessage} // Optional: i18n formatter
+/>
+
+// Show the menu
+menuRef.current?.show({
+  event: mouseEvent,                   // or x/y coordinates
+  contextMenu: menuContent             // ContextMenuContent object
+});
+```
+
+| Prop | Type | Required | Description |
+|------|------|----------|-------------|
+| `ref` | `Ref<JsonContextMenuRef>` | ✅ | Ref for imperative `show()` method |
+| `id` | `string \| number` | ✅ | Unique identifier |
+| `theme` | `string` | | Theme name |
+| `animation` | `string` | | Animation name |
+| `formatMessageProvider` | `MessageFormatter` | | i18n formatter function |
+
+**JsonContextMenuRef:**
+```typescript
+interface JsonContextMenuRef {
+  show: (options: ShowJsonContextMenuOptions) => void;
+}
+
+interface ShowJsonContextMenuOptions {
+  x?: number;                          // X coordinate
+  y?: number;                          // Y coordinate
+  event?: MouseEvent | TouchEvent;     // Or position from event
+  contextMenu: ContextMenuContent;     // Menu content
+}
+```
+
+---
+
+### ContextMenuContent
+
+JSON structure for defining menu content.
+
+```typescript
+interface ContextMenuContent {
+  items: ContextMenuItem[];
+}
+
+// Item types:
+type ContextMenuItem = 
+  | ContextMenuSimpleItem    // Regular item
+  | ContextMenuSeparator     // Separator
+  | ContextMenuSubMenu;      // Submenu with nested items
+```
+
+**Simple Item:**
+```typescript
+interface ContextMenuSimpleItem {
+  label: string | ContextMenuPredefinedMessage;  // Display text or i18n
+  icon?: ReactNode;                              // Optional icon
+  title?: string | ContextMenuPredefinedMessage; // Tooltip
+  checkbox?: {
+    enabled: boolean;                            // Clickable?
+    value: boolean;                              // Checked state
+  };
+  action?: (event: TriggerEvent) => void;        // Click handler
+}
+```
+
+**Separator:**
+```typescript
+interface ContextMenuSeparator {
+  separator: true;
+}
+```
+
+**Submenu:**
+```typescript
+interface ContextMenuSubMenu {
+  label: string | ContextMenuPredefinedMessage;
+  title?: string | ContextMenuPredefinedMessage;
+  items: ContextMenuItem[];                      // Nested items
+}
+```
+
+---
+
+### i18n / MessageFormatter
+
+For internationalization support, provide a `formatMessageProvider` function.
+
+```typescript
+type MessageFormatter = (message: ContextMenuPredefinedMessage) => string;
+
+interface ContextMenuPredefinedMessage {
+  id: string;                                    // Message ID for lookup
+  defaultMessage?: string;                       // Fallback text
+  values?: Record<string, string | number>;      // Interpolation values
+}
+```
+
+**With react-intl:**
+```tsx
+import { useIntl } from 'react-intl';
+
+const intl = useIntl();
+
+const formatMessage: MessageFormatter = (msg) => {
+  return intl.formatMessage(
+    { id: msg.id, defaultMessage: msg.defaultMessage },
+    msg.values  // Supports {count}, {name}, etc.
+  );
+};
+
+<JsonContextMenu
+  ref={menuRef}
+  id="i18n-menu"
+  formatMessageProvider={formatMessage}
+/>
+```
+
+---
+
+### Type Guards
+
+Utility functions for working with menu items:
+
+```typescript
+import { 
+  isSeparator, 
+  isSubMenu, 
+  isSimpleItem, 
+  isPredefinedMessage,
+  resolveLabel 
+} from 'replace-react-contexify';
+
+// Check item types
+isSeparator(item)        // item is ContextMenuSeparator
+isSubMenu(item)          // item is ContextMenuSubMenu  
+isSimpleItem(item)       // item is ContextMenuSimpleItem
+isPredefinedMessage(label) // label is ContextMenuPredefinedMessage
+
+// Resolve label to string
+resolveLabel(label, formatMessage?)  // Returns string
+```
+
 ## Types
 
 All TypeScript types are exported:
 
 ```typescript
 import type {
+  // Component Props
   MenuProps,
   ItemProps,
   SubmenuProps,
+  SeparatorProps,
+  MenuProviderProps,
+  JsonContextMenuProps,
+  
+  // Event & Handler Types
+  TriggerEvent,
+  MenuId,
   MenuItemEventHandler,
+  
+  // JSON Menu Types
   ContextMenuContent,
   ContextMenuItem,
+  ContextMenuSimpleItem,
+  ContextMenuSubMenu,
+  ContextMenuSeparator,
+  ContextMenuCheckbox,
+  ContextMenuLabel,
+  
+  // i18n Types
   ContextMenuPredefinedMessage,
   MessageFormatter,
+  
+  // Ref Types
   JsonContextMenuRef,
+  ShowJsonContextMenuOptions,
 } from 'replace-react-contexify';
 ```
 
