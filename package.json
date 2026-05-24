@@ -1,0 +1,80 @@
+{
+  "name": "replace-react-contexify",
+  "version": "1.0.0",
+  "description": "Modern React context menu library with zero dependencies. Features themes, animations, JSON-driven menus, i18n support with message interpolation, RTL languages, and full TypeScript support. Works with React 16.8 to 19.",
+  "main": "dist/index.js",
+  "module": "dist/index.mjs",
+  "types": "dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.mjs",
+      "require": "./dist/index.js"
+    },
+    "./styles.css": "./dist/styles.css",
+    "./scss/*": "./dist/scss/*"
+  },
+  "files": [
+    "dist"
+  ],
+  "sideEffects": [
+    "*.css",
+    "*.scss"
+  ],
+  "keywords": [
+    "react",
+    "context menu",
+    "react-component",
+    "menu",
+    "react-contextmenu",
+    "react-contexify",
+    "right-click menu"
+  ],
+  "scripts": {
+    "dev": "vite demo",
+    "build": "tsup && npm run build:styles",
+    "build:styles": "sass scss/main.scss dist/styles.css --style=compressed && npm run copy:scss",
+    "copy:scss": "copyfiles -u 0 \"scss/**/*\" dist/",
+    "demo:build": "vite build",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "test:coverage": "vitest run --coverage",
+    "lint": "tsc --noEmit",
+    "clean": "rimraf dist docs",
+    "prepublishOnly": "npm run clean && npm run build && npm run test"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/felipecarrillo100/replace-react-contexify.git"
+  },
+  "author": "Felipe Carrillo",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/felipecarrillo100/replace-react-contexify/issues"
+  },
+  "homepage": "https://felipecarrillo100.github.io/replace-react-contexify/",
+  "peerDependencies": {
+    "react": ">=16.8.0",
+    "react-dom": ">=16.8.0"
+  },
+  "devDependencies": {
+    "@testing-library/dom": "^10.4.1",
+    "@testing-library/jest-dom": "^6.9.1",
+    "@testing-library/react": "^16.0.0",
+    "@types/react": "^19.0.0",
+    "@types/react-dom": "^19.0.0",
+    "@types/testing-library__jest-dom": "^5.14.9",
+    "@vitejs/plugin-react": "^6.0.2",
+    "copyfiles": "^2.4.1",
+    "jsdom": "^29.1.1",
+    "react": "^19.0.0",
+    "react-dom": "^19.0.0",
+    "react-intl": "^10.1.9",
+    "rimraf": "^6.1.3",
+    "sass": "^1.77.0",
+    "tsup": "^8.1.0",
+    "typescript": "^6.0.3",
+    "vite": "^8.0.14",
+    "vitest": "^4.1.7"
+  }
+}

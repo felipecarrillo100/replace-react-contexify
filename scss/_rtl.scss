@@ -1,0 +1,19 @@
+// RTL (Right-to-Left) Support
+// Most RTL is handled automatically via CSS logical properties in _menu.scss
+// This file handles remaining RTL-specific adjustments
+
+// Flip the submenu arrow in RTL mode
+.react-contexify[dir="rtl"],
+[dir="rtl"] .react-contexify {
+  .react-contexify__submenu-arrow {
+    transform: scaleX(-1); // Mirror the arrow ▶ → ◀
+  }
+
+  // JSON menu checkbox alignment
+  .react-contexify__item-checkbox {
+    margin-inline-start: auto;
+    margin-inline-end: 0;
+    padding-inline-start: 12px;
+    padding-inline-end: 0;
+  }
+}
