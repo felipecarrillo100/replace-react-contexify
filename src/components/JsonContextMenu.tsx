@@ -57,7 +57,22 @@ export type { JsonContextMenuProps, ShowJsonContextMenuOptions };
  * ```
  */
 export const JsonContextMenu = forwardRef<JsonContextMenuRef, JsonContextMenuProps>(
-  ({ id, theme, animation, className, style, formatMessageProvider }, ref) => {
+  (
+    {
+      id,
+      theme,
+      animation,
+      className,
+      style,
+      formatMessageProvider,
+      onShow,
+      onHide,
+      onOpenChange,
+      onShown,
+      onHidden,
+    },
+    ref
+  ) => {
     const [menuContent, setMenuContent] = useState<ContextMenuContent>({ items: [] });
 
     // Expose show method via ref
@@ -213,6 +228,11 @@ export const JsonContextMenu = forwardRef<JsonContextMenuRef, JsonContextMenuPro
         animation={animation ?? defaultAnimation.pop}
         className={className}
         style={menuStyle}
+        onShow={onShow}
+        onHide={onHide}
+        onOpenChange={onOpenChange}
+        onShown={onShown}
+        onHidden={onHidden}
       >
         {menuContent.items.length > 0 ? renderItems(menuContent.items) : <div />}
       </Menu>

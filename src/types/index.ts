@@ -181,6 +181,16 @@ export interface JsonContextMenuProps extends StyleProps {
   animation?: string;
   /** Optional message formatter for i18n support */
   formatMessageProvider?: MessageFormatter;
+  /** Invoked when the menu is shown */
+  onShow?: () => void;
+  /** Invoked when the menu is hidden */
+  onHide?: () => void;
+  /** Invoked when the menu visibility changes */
+  onOpenChange?: (open: boolean) => void;
+  /** Invoked when the menu is shown (alias/legacy) */
+  onShown?: () => void;
+  /** Invoked when the menu is hidden (alias/legacy) */
+  onHidden?: () => void;
 }
 
 /**

@@ -264,6 +264,44 @@ RTL support features:
 - ✅ Icon positions flip appropriately
 - ✅ Detected from `dir="rtl"` on any parent element or `html[dir="rtl"]`
 
+## Lifecycle Callbacks
+
+Both `<Menu>` and `<JsonContextMenu>` support lifecycle callbacks to track when the menu is opened or closed. This is highly useful for coordinating focus management, tooltips, dropdowns, and other UI layers.
+
+### Callbacks
+- **`onShow?: () => void`**: Triggered immediately when the menu opens/fades in.
+- **`onHide?: () => void`**: Triggered immediately when the menu closes/fades out.
+- **`onOpenChange?: (open: boolean) => void`**: A unified callback that receives the current visibility state (`true` for open, `false` for closed).
+- **`onShown` / `onHidden`**: Legacy callback aliases retained for backwards compatibility.
+
+### Coordination Example
+
+A common use case is closing hover tooltips or other overlays when a context menu opens:
+
+```tsx
+import { useState } from 'react';
+import { JsonContextMenu } from 'replace-react-contexify';
+
+const Dashboard = () => {
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
+
+  return (
+    <div className="dashboard">
+      {/* Only show tooltip when the context menu is closed */}
+      {!isMenuOpen && <CustomTooltip text="Right-click for options" />}
+      
+      <JsonContextMenu
+        id="dashboard-menu"
+        onOpenChange={setIsMenuOpen}
+        /* Or use separate callbacks: */
+        // onShow={() => setIsMenuOpen(true)}
+        // onHide={() => setIsMenuOpen(false)}
+      />
+    </div>
+  );
+};
+```
+
 ## Styling
 
 ### Using Compiled CSS (Recommended)
@@ -367,6 +405,11 @@ The main container component for context menu items.
 | `animation` | `string` | | Built-in: `'fade'`, `'flip'`, `'pop'`, `'zoom'` |
 | `className` | `string` | | Additional CSS classes |
 | `style` | `CSSProperties` | | Inline styles |
+| `onShow` | `() => void` | | Triggered immediately when the menu begins to open/fade in |
+| `onHide` | `() => void` | | Triggered immediately when the menu begins to close/fade out |
+| `onOpenChange` | `(open: boolean) => void` | | Unified callback triggered when the visibility state changes |
+| `onShown` | `() => void` | | Legacy alias for `onShow` (triggered after position calculation) |
+| `onHidden` | `() => void` | | Legacy alias for `onHide` (triggered after cleanup) |
 
 ---
 
@@ -539,6 +582,11 @@ menuRef.current?.show({
 | `theme` | `string` | | Theme name |
 | `animation` | `string` | | Animation name |
 | `formatMessageProvider` | `MessageFormatter` | | i18n formatter function |
+| `onShow` | `() => void` | | Triggered immediately when the menu begins to open |
+| `onHide` | `() => void` | | Triggered immediately when the menu begins to close |
+| `onOpenChange` | `(open: boolean) => void` | | Unified callback triggered when the visibility state changes |
+| `onShown` | `() => void` | | Legacy alias for `onShow` |
+| `onHidden` | `() => void` | | Legacy alias for `onHide` |
 
 **JsonContextMenuRef:**
 ```typescript

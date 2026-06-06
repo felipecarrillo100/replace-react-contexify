@@ -53,6 +53,12 @@ export interface MenuProps extends StyleProps {
   onShown?: () => void;
   /** Invoked when the menu is hidden */
   onHidden?: () => void;
+  /** Invoked when the menu starts showing */
+  onShow?: () => void;
+  /** Invoked when the menu starts hiding */
+  onHide?: () => void;
+  /** Invoked when the menu visibility changes */
+  onOpenChange?: (open: boolean) => void;
 }
 
 interface MenuState {
@@ -77,6 +83,9 @@ export const Menu: FC<MenuProps> = ({
   className,
   onShown,
   onHidden,
+  onShow,
+  onHide,
+  onOpenChange,
 }) => {
   const [state, setState] = useState<MenuState>({
     x: 0,
@@ -236,15 +245,19 @@ export const Menu: FC<MenuProps> = ({
         bindWindowEvent();
       }, 0);
       onShown?.();
+      onShow?.();
+      onOpenChange?.(true);
       wasVisible.current = state.visible;
       return () => clearTimeout(timeoutId);
     } else if (!state.visible && wasVisible.current) {
       // Menu just became hidden
       unBindWindowEvent();
       onHidden?.();
+      onHide?.();
+      onOpenChange?.(false);
     }
     wasVisible.current = state.visible;
-  }, [state.visible, setMenuPosition, bindWindowEvent, unBindWindowEvent, onShown, onHidden]);
+  }, [state.visible, setMenuPosition, bindWindowEvent, unBindWindowEvent, onShown, onHidden, onShow, onHide, onOpenChange]);
 
   const { visible, nativeEvent, propsFromTrigger, x, y, rtl } = state;
 
