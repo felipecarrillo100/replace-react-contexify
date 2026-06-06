@@ -1,6 +1,6 @@
 {
   "name": "replace-react-contexify",
-  "version": "1.0.1",
+  "version": "1.1.0",
   "description": "Modern React context menu library with zero dependencies. Features themes, animations, JSON-driven menus, i18n support with message interpolation, RTL languages, and full TypeScript support. Works with React 16.8 to 19.",
   "main": "dist/index.js",
   "module": "dist/index.mjs",
